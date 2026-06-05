@@ -1,3 +1,5 @@
+from typing import Literal
+
 import anthropic
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
@@ -28,6 +30,17 @@ class Document(BaseModel):
     text: str
 
 
+class Summary(BaseModel):
+    summary: str
+    key_points: list[str]
+
+
+class SentimentResult(BaseModel):
+    sentiment: Literal["positive", "negative", "neutral"]
+    score: float
+    reasoning: str
+
+
 @app.get("/")
 def health():
     return {"status": "ok"}
@@ -42,23 +55,25 @@ def ask(q: Question):
         "model": MODEL,
         "max_tokens": MAX_TOKENS,
         "messages": [{"role": "user", "content": q.question}],
+        "output_format": Answer,
     }
     if q.context:
         kwargs["system"] = q.context
 
     try:
-        message = client.messages.create(**kwargs)
+        message = client.messages.parse(**kwargs)
     except anthropic.APITimeoutError:
-        return {"answer": "Error: request to Anthropic timed out."}
+        return {"error": "request to Anthropic timed out."}
     except anthropic.RateLimitError:
-        return {"answer": "Error: Anthropic rate limit exceeded."}
+        return {"error": "Anthropic rate limit exceeded."}
     except anthropic.APIConnectionError:
-        return {"answer": "Error: could not reach the Anthropic API."}
+        return {"error": "could not reach the Anthropic API."}
     except anthropic.APIStatusError as exc:
-        return {"answer": f"Error: Anthropic API returned HTTP {exc.status_code}."}
+        return {"error": f"Anthropic API returned HTTP {exc.status_code}."}
 
-    text = "".join(block.text for block in message.content if block.type == "text")
-    return {"answer": text}
+    if message.parsed_output is None:
+        return {"error": "model did not return a valid structured response."}
+    return message.parsed_output
 
 
 @app.post("/ask/stream")
@@ -91,42 +106,46 @@ def ask_stream(q: Question):
 @app.post("/summarize")
 def summarize(doc: Document):
     try:
-        message = client.messages.create(
+        message = client.messages.parse(
             model=MODEL,
             max_tokens=MAX_TOKENS,
             system="Summarize the user's text concisely while preserving the key points.",
             messages=[{"role": "user", "content": doc.text}],
+            output_format=Summary,
         )
     except anthropic.APITimeoutError:
-        return {"summary": "Error: request to Anthropic timed out."}
+        return {"error": "request to Anthropic timed out."}
     except anthropic.RateLimitError:
-        return {"summary": "Error: Anthropic rate limit exceeded."}
+        return {"error": "Anthropic rate limit exceeded."}
     except anthropic.APIConnectionError:
-        return {"summary": "Error: could not reach the Anthropic API."}
+        return {"error": "could not reach the Anthropic API."}
     except anthropic.APIStatusError as exc:
-        return {"summary": f"Error: Anthropic API returned HTTP {exc.status_code}."}
+        return {"error": f"Anthropic API returned HTTP {exc.status_code}."}
 
-    text = "".join(block.text for block in message.content if block.type == "text")
-    return {"summary": text}
+    if message.parsed_output is None:
+        return {"error": "model did not return a valid structured response."}
+    return message.parsed_output
 
 
 @app.post("/analyze-sentiment")
 def analyze_sentiment(doc: Document):
     try:
-        message = client.messages.create(
+        message = client.messages.parse(
             model=MODEL,
             max_tokens=MAX_TOKENS,
-            system="Analyze the sentiment of the user's text. State the overall sentiment (positive, negative, or neutral) and briefly explain why.",
+            system="Analyze the sentiment of the user's text. Provide the overall sentiment, a score from -1.0 (very negative) to 1.0 (very positive), and brief reasoning.",
             messages=[{"role": "user", "content": doc.text}],
+            output_format=SentimentResult,
         )
     except anthropic.APITimeoutError:
-        return {"sentiment": "Error: request to Anthropic timed out."}
+        return {"error": "request to Anthropic timed out."}
     except anthropic.RateLimitError:
-        return {"sentiment": "Error: Anthropic rate limit exceeded."}
+        return {"error": "Anthropic rate limit exceeded."}
     except anthropic.APIConnectionError:
-        return {"sentiment": "Error: could not reach the Anthropic API."}
+        return {"error": "could not reach the Anthropic API."}
     except anthropic.APIStatusError as exc:
-        return {"sentiment": f"Error: Anthropic API returned HTTP {exc.status_code}."}
+        return {"error": f"Anthropic API returned HTTP {exc.status_code}."}
 
-    text = "".join(block.text for block in message.content if block.type == "text")
-    return {"sentiment": text}
+    if message.parsed_output is None:
+        return {"error": "model did not return a valid structured response."}
+    return message.parsed_output

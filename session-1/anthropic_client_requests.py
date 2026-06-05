@@ -7,6 +7,22 @@ ANTHROPIC_VERSION = "2023-06-01"
 DEFAULT_MODEL = "claude-sonnet-4-5"
 
 
+class AnthropicError(Exception):
+    """Base error for failures at the Anthropic client boundary."""
+
+
+class AnthropicTimeoutError(AnthropicError):
+    """The request exceeded the configured timeout."""
+
+
+class AnthropicRateLimitError(AnthropicError):
+    """Anthropic returned HTTP 429. ``retry_after`` is the suggested wait in seconds, if provided."""
+
+    def __init__(self, message, retry_after=None):
+        super().__init__(message)
+        self.retry_after = retry_after
+
+
 class AnthropicClient:
     """
     Thin wrapper around the Anthropic Messages HTTP endpoint.
@@ -34,13 +50,32 @@ class AnthropicClient:
             "messages": [{"role": "user", "content": message}],
         }
 
-        response = requests.post(
-            ANTHROPIC_API_URL,
-            headers=headers,
-            json=payload,
-            timeout=self.timeout,
-        )
-        response.raise_for_status()
+        try:
+            response = requests.post(
+                ANTHROPIC_API_URL,
+                headers=headers,
+                json=payload,
+                timeout=self.timeout,
+            )
+        except requests.exceptions.Timeout as exc:
+            raise AnthropicTimeoutError(f"Request timed out after {self.timeout}s") from exc
+        except requests.exceptions.ConnectionError as exc:
+            raise AnthropicError(f"Could not reach Anthropic API: {exc}") from exc
+
+        if response.status_code == 429:
+            retry_after = response.headers.get("retry-after")
+            raise AnthropicRateLimitError(
+                "Anthropic rate limit exceeded (HTTP 429)",
+                retry_after=float(retry_after) if retry_after else None,
+            )
+
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as exc:
+            raise AnthropicError(
+                f"Anthropic API returned HTTP {response.status_code}: {response.text}"
+            ) from exc
+
         return response.json()
 
 

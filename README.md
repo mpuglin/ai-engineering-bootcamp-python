@@ -1,62 +1,42 @@
 # AI Engineering Bootcamp - Python
 
-Python projects and experiments from the AI Engineering Bootcamp, including vector databases, agent systems, and multi-agent architectures.
+Classwork and projects from an AI Engineering course covering multi-agent systems, vector databases, and agent architectures.
+
+## Structure
+
+Each class session has its own directory with isolated dependencies:
+
+- `session-1/` - Session 1 classwork
+- `session-2/` - Session 2 classwork
+- (more sessions to be added)
 
 ## Requirements
 
 - Python >= 3.14
 - uv (Python package manager)
 
-## Dependencies
+## Working with Sessions
 
-This project uses the following key dependencies:
+Each session directory is self-contained:
 
-- **pinecone** (>=9.0.1) - Vector database for AI applications
-
-Additional installed packages:
-- anyio (4.13.0)
-- certifi (2026.5.20)
-- httpx (0.28.1)
-- httpcore (1.0.9)
-- h2 (4.3.0)
-- msgspec (0.21.1)
-- orjson (3.11.9)
-
-## Installation
-
-1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd pinecone-experiment-1
-```
+# Navigate to a session
+cd session-1
 
-2. Install dependencies using uv:
-```bash
+# Install dependencies for that session
 uv sync
+
+# Run the code
+python main.py
 ```
 
-This will create a virtual environment at `.venv` and install all required packages.
+## Development Workflow
 
-## Usage
-
-```python
-import pinecone
-
-# Your Pinecone code here
-```
-
-## Development
-
-To add new dependencies:
-```bash
-uv add <package-name>
-```
-
-To remove dependencies:
-```bash
-uv remove <package-name>
-```
-
-## License
-
-Add your license information here.
+1. Work in the specific session directory
+2. Commit changes from the repository root:
+   ```bash
+   cd /path/to/ai-engineering-bootcamp-python
+   git add session-x/
+   git commit -m "feat: Complete session-x exercises"
+   git push
+   ```

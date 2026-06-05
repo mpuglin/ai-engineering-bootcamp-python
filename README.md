@@ -15,6 +15,16 @@ Each class session has its own directory with isolated dependencies:
 - Python >= 3.14
 - uv (Python package manager)
 
+## Setup
+
+1. **Clone the repository**
+2. **Copy `.env.example` to `.env` and add your API keys:**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your actual API keys
+   ```
+3. **The `.env` file is shared across all sessions** - no need to duplicate keys!
+
 ## Working with Sessions
 
 Each session directory is self-contained:

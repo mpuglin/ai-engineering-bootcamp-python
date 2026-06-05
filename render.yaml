@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: session-1-api
+    runtime: docker
+    plan: free
+    region: oregon
+    branch: main
+    dockerfilePath: ./session-1/Dockerfile
+    dockerContext: ./session-1
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false

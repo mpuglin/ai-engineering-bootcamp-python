@@ -2248,6 +2248,8 @@ dependencies = [
     { name = "jupyter" },
     { name = "pydantic" },
     { name = "pypdf" },
+    { name = "jupyter" },
+    { name = "pydantic" },
     { name = "python-dotenv" },
 ]
 

@@ -82,6 +82,7 @@ dmypy.json
 # Logs
 *.log
 logs/
+rag_session_log.csv
 
 # Temporary files
 *.tmp

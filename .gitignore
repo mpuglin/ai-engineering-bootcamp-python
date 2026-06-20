@@ -103,6 +103,7 @@ mlruns/
 *.db
 *.sqlite
 *.sqlite3
+session-2/data/chroma_store/
 
 # Secrets & API Keys
 secrets.json

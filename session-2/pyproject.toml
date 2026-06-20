@@ -1,7 +1,7 @@
 [project]
 name = "session-2"
 version = "0.1.0"
-description = "Add your description here"
+description = "Session 2 municipal regulations RAG — contextual embeddings, ChromaDB, Gradio UI"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [

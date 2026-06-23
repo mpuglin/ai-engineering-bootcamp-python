@@ -25,6 +25,7 @@ testing the final application** (`ragexperiment-8-gradio-ui.ipynb`).
 9. [Testing the Gradio UI (iteration 8)](#testing-the-gradio-ui-iteration-8)
 10. [Troubleshooting](#troubleshooting)
 11. [Design decisions and trade-offs](#design-decisions-and-trade-offs)
+12. [Learnings](#learnings)
 
 ---
 
@@ -537,6 +538,18 @@ and re-run contextual ingest (destructive — rebuilds from scratch).
 | Gradio 6 message format | Chat history uses `{"role": "user"|"assistant", "content": "..."}` dicts |
 | Incremental ingest | Only new PDFs are processed; safe to re-run after adding files |
 | CSV session log | Enables offline analysis of retrieval quality and answers |
+
+---
+## Learnings and Surprises
+- Was surprised that Antrhopic did not have their own embedding model.  They refer users to Voyage AI.  For this exercise, I used ChromaDB's default embedding for the final deliverable.
+- Comparing the embedding models and chunking parameters is... time intensive.  For this exerise, I did not spend too much time evaluation the perfect configuration but I can understand this would be time-intensive.   I felt that chunking by document section heading was likely most valuable approach given these are technical regulations. 
+- Contextualization - impressed by the improvement in response quality. However, did not expect the large increase in indexing time.  Planing chunking/insertion was only about 2.5 minutes for my corpus.  Once I added contextualization, the time to chunk/insert with the contextualization added was over 2.5 hours.  (running on local mac-mini)
+- Did not have streaming in place until final iteration.   Makes a improvement, but still an initial delay that is noticeable... and UX can suffer.
+- Adding the query context history and sending that along to the LLM is an obvious "must-have"... follow-up questions are only possible with this in place
+- Error handling - just so happens that Anthropic had service issues when I was testing... and I was receiving 500 errors.  Forced me to improve the error-handling that was already in place.  Very surprised at Anthropics current uptime metrics..  https://status.claude.com/  (Would suggest hosting model on AWS Bedrock as Anthropic has too many issues to build an enterprise service against it)
+- Gradio  - cool tool for quick and dirty demos/experimentation.   Haven't tried Streamlit, will try that later.
+- Finally... the iterative approach to this exercise resulted in numerous changes and gradual understanding of requirements.  This resulted in code that works but that is architected pretty poorly.  Would like to try a light-weight harness for my next experimentation (SuperPowers or GSD)
+
 
 ---
 

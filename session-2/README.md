@@ -125,14 +125,15 @@ deliverable.**
 
 | File | Focus | Notes |
 |------|-------|-------|
-| `ragexperiment-1.ipynb` | Chunking and embedding basics | Early experiments |
-| `ragexperiment-2-embedding-eval.ipynb` | Compare embedding models | Evaluation across models |
-| `ragexperiment-3-langchain-load.ipynb` | LangChain PDF loading | PyPDFLoader + text splitter |
-| `ragexperiment-4-productionready.ipynb` | Production RAG patterns | Multi-model, governance, logging |
-| `ragexperiment-5-production-simplification.ipynb` | Simplified production variant | Iteration on #4 |
-| `ragexperiment-6-simplified.ipynb` | OpenAI-only embeddings | Baldwin-only corpus; `EphemeralClient` (in-memory, not persisted) |
-| `ragexperiment-7-class-architecture.ipynb` | **Class-based architecture** | `VectorDB` + `ContextualVectorDB`; Chroma `PersistentClient`; terminal chat |
-| `ragexperiment-8-gradio-ui.ipynb` | **Gradio web UI** ★ | Same classes as #7; browser chat instead of `input()` |
+| `ragexperiment-1.ipynb` | Chunking and embedding basics | Early experiment with manual chunking and embedding and insert.  Parsing PDF files from local municipalities.|
+| `ragexperiment-2-embedding-eval.ipynb` | Compare embedding models | Add two more embedding models. Evaluation across models (ChromaDB, HuggingFace, Open AI).  Create suite of questions. |
+| `ragexperiment-3-langchain-load.ipynb` | LangChain PDF loading | Replace our custom pyPDF + regex splitter with LangChain's out of the box splitter. PyPDFLoader + text splitter Added simple prompt history array so that the LLM has access to previous conversation for context. (Query Loop).  Added interactive query method so user can submit ad-hoc queries.|
+| `ragexperiment-4-productionready.ipynb` | Production RAG patterns | Multi-model, governance, logging.  Added simple logging to csv file for analysis (query, chunking results and scores for all three models.) Added token budget and timeout logic. Improve system prompt to include document citation reference in all responses. Added embedding contextualization - greatly improves query results but increases embedding times by significant degree. Made this an optional step.|
+| `ragexperiment-5-production-simplification.ipynb` | Simplified production variant | Added ability to change embedding model interactively.  |
+| `ragexperiment-6-simplified.ipynb` | OpenAI-only embeddings | - Simplified to use only OpenAI (text-embedding-3-small) for embedding.  No need at this point for all three embedding models.  Interactive chat (nothing fancy. Print to terminal output, displayed at top of Cursor) and allow for user input. Log queries to simple csv file for review.  Token budget implemented.
+ - Note:  Noticed after the fact that we accidentally removed contextualization logic during this simplification.   (we will add back in next iteration) |
+| `ragexperiment-7-class-architecture.ipynb` | **Class-based architecture** |Continual vibe-code iterations lead to working, but clumsy implementation.  Refactor a bit to class-based approach.  `VectorDB` + `ContextualVectorDB` classes; Chroma `PersistentClient`; terminal chat |
+| `ragexperiment-8-gradio-ui.ipynb` | **Gradio web UI** ★ | Added Gradio for a browser chat instead of `input()`. Show token budget and cited documents in side-bar. |
 
 ### Iteration 7 — core classes (reference)
 

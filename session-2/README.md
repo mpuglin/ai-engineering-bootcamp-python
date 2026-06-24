@@ -528,7 +528,7 @@ and re-run contextual ingest (destructive — rebuilds from scratch).
 
 ---
 ## Learnings and Surprises
-- Was surprised that Antrhopic did not have their own embedding model.  They refer users to Voyage AI.  For this exercise, I used ChromaDB's default embedding for the final deliverable.
+- Was surprised that Antrhopic did not have their own embedding model.  They refer users to Voyage AI.  For this exercise, I used ChromaDB's default embedding initially, and then OpenAI for the final deliverable.
 - Comparing the embedding models and chunking parameters is... time intensive.  For this exerise, I did not spend too much time evaluation the perfect configuration but I can understand this would be time-intensive.   I felt that chunking by document section heading was likely most valuable approach given these are technical regulations. 
 - Contextualization - impressed by the improvement in response quality. However, did not expect the large increase in indexing time.  Planing chunking/insertion was only about 2.5 minutes for my corpus.  Once I added contextualization, the time to chunk/insert with the contextualization added was over 2.5 hours.  (running on local mac-mini)
 - Did not have streaming in place until final iteration.   Makes a improvement, but still an initial delay that is noticeable... and UX can suffer.

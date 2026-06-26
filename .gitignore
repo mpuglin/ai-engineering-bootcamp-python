@@ -111,3 +111,6 @@ credentials.json
 *.pem
 *.key
 *.cert
+
+#Media Files
+*.mp4
